@@ -1,0 +1,49 @@
+.header {
+  top: 0;
+  left: 0;
+  width: 95vw; /* Span full viewport width */
+  height: 80px;
+  background: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  /* No margin-left needed, stays at leftmost */
+}
+.header-logo {
+  width: 28px;
+  height: 28px;
+  background: #4f8cff;
+  border-radius: 6px;
+  margin-right: 10px;
+  display: inline-block;
+}
+.header-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #444;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* No margin-right needed, stays at rightmost */
+}
+.header-btn {
+  background: none;
+  border: none;
+  padding: 0 6px;
+  cursor: pointer;
+  color: #444;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+.header-btn:hover {
+  color: #2563eb;
+}
