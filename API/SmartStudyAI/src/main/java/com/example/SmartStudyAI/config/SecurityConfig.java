@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/ocr/**").permitAll()
                         .anyRequest().authenticated() // All other requests require authentication
                 );
         return http.build();
