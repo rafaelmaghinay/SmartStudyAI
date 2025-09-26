@@ -1,17 +1,30 @@
 package com.example.SmartStudyAI.services;
 
+import com.example.SmartStudyAI.model.Notes;
+import com.example.SmartStudyAI.repositories.OcrTextFileRepo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class OcrService {
+
+    @Autowired
+    OcrTextFileRepo ocrTextFileRepo;
 
     private final HttpClient http = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -19,7 +32,7 @@ public class OcrService {
     @Value("${ocr.api.key}")
     private String OCR_KEY;
 
-    public String extractText(String imageUrl) throws Exception {
+    public String extractText(String imageUrl, long userId) throws Exception {
 
         // Validate API key
         if (OCR_KEY == null || OCR_KEY.isBlank()) {
@@ -76,5 +89,41 @@ public class OcrService {
         if (lower.endsWith(".pdf")) return "PDF";
         if (lower.endsWith(".tif") || lower.endsWith(".tiff")) return "TIF";
         return ""; // unknown
+    }
+
+    public String extractTextFromFile(MultipartFile file, Long userId, String subject)  {
+        try {
+            String extractedText = "";
+
+            String fileName = file.getOriginalFilename();
+            if (fileName.endsWith(".pdf")) {
+                try (PDDocument document = PDDocument.load(file.getInputStream())) {
+                    PDFTextStripper pdfTextStripper = new PDFTextStripper();
+                    extractedText = pdfTextStripper.getText(document);
+                }
+            } else if (fileName.endsWith(".docx")) {
+                try (XWPFDocument doc = new XWPFDocument(file.getInputStream())) {
+                    List<XWPFParagraph> paragraphs = doc.getParagraphs();
+                    StringBuilder sb = new StringBuilder();
+                    for (XWPFParagraph para : paragraphs) {
+                        sb.append(para.getText()).append("\n");
+                    }
+                    extractedText = sb.toString();
+                }
+            } else {
+                return "Unsupported file type!";
+            }
+
+            Notes notes = new Notes();
+            notes.setUserId(userId);
+            notes.setTitle(fileName);
+            notes.setSubject(subject);
+            notes.setContent(extractedText);
+            ocrTextFileRepo.save(notes);
+            return "Notes uploaded successfully!";
+        }  catch (IOException e) {
+            e.printStackTrace();
+            return "Error reading file: " + e.getMessage();
+        }
     }
 }

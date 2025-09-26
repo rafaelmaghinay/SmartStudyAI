@@ -22,6 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/ocr/**").permitAll()
+                        .requestMatchers("/api/notes/**").permitAll()
                         .anyRequest().authenticated() // All other requests require authentication
                 );
         return http.build();
