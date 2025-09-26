@@ -2,9 +2,11 @@ package com.example.SmartStudyAI.controller;
 
 import com.example.SmartStudyAI.services.OcrService;
 import com.example.SmartStudyAI.dto.OcrRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -19,14 +21,14 @@ public class OcrController {
     }
 
     @PostMapping("/extract")
-    public ResponseEntity<Map<String, Object>> extract(@RequestBody OcrRequest request) {
+    public ResponseEntity<Map<String, Object>> extract(@Valid @RequestBody OcrRequest request) {
         try {
             if (request.getImageUrl() == null || request.getImageUrl().isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("success", false, "error", "Missing required field: imageUrl"));
             }
 
-            String text = ocrService.extractText(request.getImageUrl());
+            String text = ocrService.extractText(request.getImageUrl(), request.userId);
 
             return ResponseEntity.ok(Map.of("success", true, "text", text));
 
@@ -37,6 +39,12 @@ public class OcrController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "error", "OCR processing failed", "details", ex.getMessage()));
         }
+    }
+
+    @PostMapping("/upload")
+    public String uploadAndExtractText(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId, @RequestParam("subject") String subject) throws Exception {
+        ocrService.extractTextFromFile(file, userId, subject );
+        return "Notes uploaded successfully!";
     }
 
     @GetMapping("/test")
