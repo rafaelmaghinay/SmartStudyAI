@@ -1,10 +1,18 @@
 package com.example.SmartStudyAI.controller;
 
+import com.example.SmartStudyAI.dto.SubjectRequest;
+import com.example.SmartStudyAI.model.Notes;
+import com.example.SmartStudyAI.model.Subject;
 import com.example.SmartStudyAI.services.OcrService;
 import com.example.SmartStudyAI.dto.OcrRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.SmartStudyAI.model.Users;
 
 import java.util.Map;
 
@@ -19,14 +27,14 @@ public class OcrController {
     }
 
     @PostMapping("/extract")
-    public ResponseEntity<Map<String, Object>> extract(@RequestBody OcrRequest request) {
+    public ResponseEntity<Map<String, Object>> extract(@Valid @RequestBody OcrRequest request) {
         try {
             if (request.getImageUrl() == null || request.getImageUrl().isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("success", false, "error", "Missing required field: imageUrl"));
             }
 
-            String text = ocrService.extractText(request.getImageUrl());
+            String text = ocrService.extractText(request.getImageUrl(), request.subjectId);
 
             return ResponseEntity.ok(Map.of("success", true, "text", text));
 
@@ -37,6 +45,18 @@ public class OcrController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "error", "OCR processing failed", "details", ex.getMessage()));
         }
+    }
+
+    @PostMapping("/upload")
+    public Notes uploadAndExtractText(@RequestParam("file") MultipartFile file, HttpSession session, @RequestParam("subjectId") Long subjectId) throws Exception {
+        Users user = (Users) session.getAttribute("user");
+        return ocrService.extractTextFromFile(file, user.getId(), subjectId);
+    }
+
+    @PostMapping("/add-subject")
+    public Subject createSubject(@Valid @RequestBody SubjectRequest subjectRequest, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        return ocrService.createSubject(subjectRequest.subjectName, user.getId());
     }
 
     @GetMapping("/test")

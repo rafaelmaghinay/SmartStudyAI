@@ -12,18 +12,18 @@ public class Quizzes {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
-    private int userId;
-    private int noteId;
+    private long userId;
+    private long notesId;
     private Date createdAt;
     private String title;
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -35,12 +35,12 @@ public class Quizzes {
         this.title = title;
     }
 
-    public int getNoteId() {
-        return noteId;
+    public long getNotesId() {
+        return notesId;
     }
 
-    public void setNoteId(int noteId) {
-        this.noteId = noteId;
+    public void setNotesId(long noteId) {
+        this.notesId = noteId;
     }
 
     public Date getCreatedAt() {
@@ -51,7 +51,7 @@ public class Quizzes {
         this.createdAt = createdAt;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }

@@ -10,9 +10,9 @@ import java.util.Date;
 public class Answers {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private int id;
-    private int questionId;
-    private int userId;
+    private long id;
+    private long questionId;
+    private long userId;
     private String selectedOption;
     private boolean isCorrect;
     private Date answeredAt;
@@ -25,7 +25,7 @@ public class Answers {
         this.answeredAt = answeredAt;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -37,11 +37,11 @@ public class Answers {
         isCorrect = correct;
     }
 
-    public int getQuestionId() {
+    public long getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(int questionId) {
+    public void setQuestionId(long questionId) {
         this.questionId = questionId;
     }
 
@@ -53,11 +53,11 @@ public class Answers {
         this.selectedOption = selectedOption;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 }

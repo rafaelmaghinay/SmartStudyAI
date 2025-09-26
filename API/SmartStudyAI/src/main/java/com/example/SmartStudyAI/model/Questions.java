@@ -8,9 +8,10 @@ import jakarta.persistence.Id;
 public class Questions {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    private long id;
 
-    private int quizId;
+    private long quizId;
     private String questionText;
     private String questionType;
     private String optionA;
@@ -20,12 +21,8 @@ public class Questions {
     private String correctOption;
     private String explanation;
 
-    public int getId() {
+    public long getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getExplanation() {
@@ -92,11 +89,11 @@ public class Questions {
         this.questionType = questionType;
     }
 
-    public int getQuizId() {
+    public long getQuizId() {
         return quizId;
     }
 
-    public void setQuizId(int quizId) {
+    public void setQuizId(long quizId) {
         this.quizId = quizId;
     }
 }

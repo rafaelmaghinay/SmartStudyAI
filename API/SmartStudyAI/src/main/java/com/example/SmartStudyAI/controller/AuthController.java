@@ -7,6 +7,8 @@ import com.example.SmartStudyAI.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,12 +28,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Users login(@Valid @RequestBody LoginRequest request) {
+    public Users login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         Users user = userService.login(request.email, request.password);
         if (user == null) throw new RuntimeException("Invalid credentials");
+        session.setAttribute("user", user);
         return user;
     }
-
     @GetMapping("/user")
     public long userId(@RequestParam String email) {
         return userService.getIdByEmail(email);
