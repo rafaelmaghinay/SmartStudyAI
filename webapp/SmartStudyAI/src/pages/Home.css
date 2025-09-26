@@ -1,0 +1,67 @@
+.home-main {
+  padding: 40px 40px 0 40px;
+  min-height: calc(100vh - 80px);
+  background: #f7f9fb;
+}
+
+.home-cards {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.home-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 32px 24px;
+  text-align: center;
+  min-width: 260px;
+  max-width: 340px;
+}
+
+.home-card.notes h2 { color: #2563eb; }
+.home-card.quiz h2 { color: #22c55e; }
+.home-card.stats h2 { color: #a21caf; }
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
+.home-stats-bar {
+  background: #fff7f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 18px 32px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.score { color: #22c55e; font-weight: 600; }
+.streak { color: #f97316; font-weight: 600; }
+.divider { color: #bbb; margin: 0 12px; }
+
+.clickable {
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.clickable:hover, .clickable:focus {
+  box-shadow: 0 4px 16px rgba(37,99,235,0.12);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.welcome-message {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 32px;
+  text-align: center;
+}
