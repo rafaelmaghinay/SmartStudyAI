@@ -26,7 +26,7 @@ const Sidebar = () => {
             </li>
           </NavLink>
           <NavLink
-            to="/notes"
+            to="/noteshome"
             className={({ isActive }) =>
               isActive ? "active sidebar-link" : "sidebar-link"
             }
