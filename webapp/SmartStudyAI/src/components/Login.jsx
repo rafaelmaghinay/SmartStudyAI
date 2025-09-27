@@ -8,15 +8,56 @@ export default function Login() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [login, setLogin] = useState(true);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (login) {
-      console.log("Email:", email, "Password:", password);
+      // Login API call
+      try {
+        const response = await fetch("https://localhost:8080/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // Handle successful login (e.g., save token, redirect)
+          console.log("Login success:", data);
+        } else {
+          // Handle login error
+          alert(data.message || "Login failed");
+        }
+      } catch (error) {
+        alert("Network error: " + error.message);
+      }
     } else {
-      console.log("Username:", username, "Email:", email, "Password:", password, "Confirm Password:", confirmPassword);
+      // Signup API call
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+      try {
+        const response = await fetch("https://localhost:8080/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: username, email, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // Handle successful signup (e.g., show message, switch to login)
+          alert("Signup successful! Please log in.");
+          setLogin(true);
+        } else {
+          // Handle signup error
+          alert(data.message || "Signup failed");
+        }
+      } catch (error) {
+        alert("Network error: " + error.message);
+      }
     }
-    // Sign-in API here, probably using what's in the fetch comment below
-    // fetch("/api/login", { method: "POST", body: JSON.stringify({ email, password }) });
   };
 
   return (
