@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Login.css"; // Import the new CSS file
 
 export default function Login() {
-    const [username, setUsername] = useState("");
+    const [name, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -13,7 +13,7 @@ export default function Login() {
     if (login) {
       // Login API call
       try {
-        const response = await fetch("https://localhost:8080/api/auth/login", {
+        const response = await fetch("http://localhost:8080/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -38,12 +38,12 @@ export default function Login() {
         return;
       }
       try {
-        const response = await fetch("https://localhost:8080/api/auth/signup", {
+        const response = await fetch("http://localhost:8080/api/auth/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name: username, email, password }),
+          body: JSON.stringify({ name , email, password }),
         });
         const data = await response.json();
         if (response.ok) {
@@ -92,7 +92,7 @@ export default function Login() {
             <input
                 type="text"
                 placeholder="Create Username"
-                value={username}
+                value={name}
                 onChange={(e) => setUsername(e.target.value)}
                 className="input-field"
                 required
