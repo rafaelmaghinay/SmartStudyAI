@@ -38,7 +38,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/quizzes"
+            to="/quizhome"
             className={({ isActive }) =>
               isActive ? "active sidebar-link" : "sidebar-link"
             }
