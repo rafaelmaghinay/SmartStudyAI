@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 @Service
 public class QuizService {
@@ -45,6 +47,7 @@ public class QuizService {
             quiz.setTitle(quizNode.path("title").asText());
             quiz.setNotesId(notesId);
             quiz.setUserId(userId);
+            quiz.setCreatedAt(new Date());
             quiz = quizRepository.save(quiz);
 
             // Save Questions and Answers
@@ -101,5 +104,9 @@ public class QuizService {
 
         System.out.println("JSON Response: " + json);
         return saveQuizFromJson(json, userId, notesId);
+    }
+
+    public List<Quizzes> getAllQuizzesByUserId(Long userId) {
+        return quizRepository.findAllByUserId(userId);
     }
 }
