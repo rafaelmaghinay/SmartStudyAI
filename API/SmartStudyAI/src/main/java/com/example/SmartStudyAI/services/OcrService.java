@@ -130,10 +130,11 @@ public class OcrService {
         }
     }
 
-    public Subject createSubject(String subjectName, long userId) {
+    public Subject createSubject(String subjectName, long userId, String colorId) {
         Subject subject = new Subject();
         subject.setName(subjectName);
         subject.setUserId(userId);
+        subject.setColorId(colorId);
         // Save the subject to the database (assuming you have a SubjectRepository)
         return subjectRepository.save(subject);
     }

@@ -13,6 +13,15 @@ public class Subject {
 
     private Long userId;
     private String name;
+    private String colorId;
+
+    public String getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(String colorId) {
+        this.colorId = colorId;
+    }
 
     public Long getId() {
         return id;

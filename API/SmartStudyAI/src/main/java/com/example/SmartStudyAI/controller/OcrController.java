@@ -56,7 +56,7 @@ public class OcrController {
     @PostMapping("/add-subject")
     public Subject createSubject(@Valid @RequestBody SubjectRequest subjectRequest, HttpSession session) {
         Users user = (Users) session.getAttribute("user");
-        return ocrService.createSubject(subjectRequest.subjectName, user.getId());
+        return ocrService.createSubject(subjectRequest.subjectName, user.getId(), subjectRequest.colorId);
     }
 
     @GetMapping("/test")
