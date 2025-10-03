@@ -1,8 +1,9 @@
+
 import { useState } from "react";
-import "./Login.css"; // Import the new CSS file
+import "./Login.css";
 import authService from "../services/authService";
 
-export default function Login() {
+export default function Login({ onLoginSuccess }) {
     const [name, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,6 +18,8 @@ export default function Login() {
         // Use authService for login
         const data = await authService.login(email, password);
         console.log("Login success:", data);
+        // Call onLoginSuccess if provided
+        if (onLoginSuccess) onLoginSuccess();
         // Handle successful login (e.g., save token, redirect)
       } else {
         // Signup validation
@@ -24,7 +27,6 @@ export default function Login() {
           alert("Passwords do not match");
           return;
         }
-        
         // Use authService for signup
         await authService.signup(name, email, password);
         alert("Signup successful! Please log in.");
