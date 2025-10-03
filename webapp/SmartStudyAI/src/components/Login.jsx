@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Login.css"; // Import the new CSS file
+import authService from "../services/authService";
 
 export default function Login() {
     const [name, setUsername] = useState("");
@@ -8,55 +9,29 @@ export default function Login() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [login, setLogin] = useState(true);
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-    if (login) {
-      // Login API call
-      try {
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          // Handle successful login (e.g., save token, redirect)
-          console.log("Login success:", data);
-        } else {
-          // Handle login error
-          alert(data.message || "Login failed");
+    
+    try {
+      if (login) {
+        // Use authService for login
+        const data = await authService.login(email, password);
+        console.log("Login success:", data);
+        // Handle successful login (e.g., save token, redirect)
+      } else {
+        // Signup validation
+        if (password !== confirmPassword) {
+          alert("Passwords do not match");
+          return;
         }
-      } catch (error) {
-        alert("Network error: " + error.message);
+        
+        // Use authService for signup
+        await authService.signup(name, email, password);
+        alert("Signup successful! Please log in.");
+        setLogin(true);
       }
-    } else {
-      // Signup API call
-      if (password !== confirmPassword) {
-        alert("Passwords do not match");
-        return;
-      }
-      try {
-        const response = await fetch("http://localhost:8080/api/auth/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name , email, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          // Handle successful signup (e.g., show message, switch to login)
-          alert("Signup successful! Please log in.");
-          setLogin(true);
-        } else {
-          // Handle signup error
-          alert(data.message || "Signup failed");
-        }
-      } catch (error) {
-        alert("Network error: " + error.message);
-      }
+    } catch (error) {
+      alert(error.message);
     }
   };
 
