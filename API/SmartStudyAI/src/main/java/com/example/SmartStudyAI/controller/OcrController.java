@@ -59,6 +59,11 @@ public class OcrController {
         return ocrService.createSubject(subjectRequest.subjectName, user.getId(), subjectRequest.colorId);
     }
 
+    @GetMapping("/subjects/{userId}")
+    public ResponseEntity<?> getAllSubjectsByUserId(@PathVariable Long userId){
+        return ResponseEntity.ok(ocrService.getAllSubjectsByUserId(userId));
+    }
+
     @GetMapping("/test")
     public String test() {
         return "Spring Boot is running!";

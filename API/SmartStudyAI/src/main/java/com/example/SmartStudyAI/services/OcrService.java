@@ -138,4 +138,8 @@ public class OcrService {
         // Save the subject to the database (assuming you have a SubjectRepository)
         return subjectRepository.save(subject);
     }
+
+    public List<Subject> getAllSubjectsByUserId(long userId) {
+        return subjectRepository.findAllByUserId(userId);
+    }
 }
