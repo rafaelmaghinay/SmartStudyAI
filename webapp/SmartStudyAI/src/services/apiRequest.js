@@ -1,3 +1,5 @@
+//added by Rafael Maghinay October 2025
+
 const API_BASE_URL = "http://localhost:8080/api";
 
 export const apiRequest = async (endpoint, options = {}) => {

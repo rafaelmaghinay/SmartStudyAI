@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.SmartStudyAI.model.Users;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -59,9 +60,18 @@ public class OcrController {
         return ocrService.createSubject(subjectRequest.subjectName, user.getId(), subjectRequest.colorId);
     }
 
-    @GetMapping("/subjects/{userId}")
-    public ResponseEntity<?> getAllSubjectsByUserId(@PathVariable Long userId){
+    @GetMapping("user/me/subjects")
+    public ResponseEntity<?> getAllSubjectsByUserId(HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        Long userId = user.getId();
         return ResponseEntity.ok(ocrService.getAllSubjectsByUserId(userId));
+    }
+
+    @GetMapping("user/me/subjects/{subjectId}")
+    public List<Notes> getAllNotesBySubjectId(HttpSession session, @PathVariable Long subjectId) {
+        Users user = (Users) session.getAttribute("user");
+        Long userId = user.getId();
+        return ocrService.getAllNotesBySubjectId(userId, subjectId);
     }
 
 

@@ -1,3 +1,5 @@
+//Added By Rafael Maghinay October 2025
+
 import React, { createContext, useContext, useState } from "react";
 
 // Create the AuthContext

@@ -12,12 +12,15 @@ export const notesService = {
   },
 
   getSubjects: async () => {
-    return apiRequest("/ocr/subjects", { method: "GET" });
+    return apiRequest("/ocr/user/me/subjects",
+       { method: "GET" });
   },
 
+//added by Rafael Maghinay October 2025
   getNotesBySubject: async (subjectId) => {
-    return apiRequest(`/ocr/notes/${subjectId}`, { method: "GET" });
+    return apiRequest(`/ocr/user/me/subjects/${subjectId}`, { method: "GET" });
   },
+//end added by Rafael
 };
 
 export default notesService;

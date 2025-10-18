@@ -8,10 +8,9 @@ export const quizService = {
     });
   },
 
-  signup: async (name, email, password) => {
-    return apiRequest("/auth/signup", {
-      method: "POST",
-      body: JSON.stringify({ name, email, password }),
+  getQuiz: async (name, email, password) => {
+    return apiRequest("/quizzes/user/me", {
+      method: "GET",
     });
   },
 };

@@ -142,4 +142,8 @@ public class OcrService {
     public List<Subject> getAllSubjectsByUserId(long userId) {
         return subjectRepository.findAllByUserId(userId);
     }
+
+    public List<Notes> getAllNotesBySubjectId(Long userId, Long subjectId) {
+        return ocrTextFileRepo.findAllByUserIdAndSubjectId(userId, subjectId);
+    }
 }
