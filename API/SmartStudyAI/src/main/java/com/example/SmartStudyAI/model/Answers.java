@@ -12,10 +12,19 @@ public class Answers {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private long id;
     private long questionId;
+    private long quizId;
     private long userId;
     private String selectedOption;
     private boolean isCorrect;
     private Date answeredAt;
+
+    public long getQuizId() {
+        return quizId;
+    }
+
+    public void setQuizId(long quizId) {
+        this.quizId = quizId;
+    }
 
     public Date getAnsweredAt() {
         return answeredAt;

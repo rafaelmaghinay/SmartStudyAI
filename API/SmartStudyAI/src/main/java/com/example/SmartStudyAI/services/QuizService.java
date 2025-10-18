@@ -109,4 +109,32 @@ public class QuizService {
     public List<Quizzes> getAllQuizzesByUserId(Long userId) {
         return quizRepository.findAllByUserId(userId);
     }
+
+    public List<Questions> getQuestionsByQuizId(Long quizId) {
+        return questionsRepository.findAllByQuizId(quizId);
+    }
+
+    public int calculateScore(Long userId, Long quizId, List<Character> answers) {
+        List<Questions> questions = questionsRepository.findAllByQuizId(quizId);
+        int score = 0;
+
+        for (int i = 0; i < questions.size(); i++) {
+            Questions question = questions.get(i);
+            char correctOption = question.getCorrectOption().charAt(0);
+            char userAnswer = answers.get(i);
+
+            // Save user's answer
+            Answers answer = new Answers();
+            answer.setUserId(userId);
+            answer.setQuizId(quizId);
+            answer.setQuestionId(question.getId());
+            answer.setSelectedOption(String.valueOf(userAnswer));
+            answersRepository.save(answer);
+
+            if (userAnswer == correctOption) {
+                score++;
+            }
+        }
+        return score;
+    }
 }

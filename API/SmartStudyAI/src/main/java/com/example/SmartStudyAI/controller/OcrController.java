@@ -64,7 +64,9 @@ public class OcrController {
         return ResponseEntity.ok(ocrService.getAllSubjectsByUserId(userId));
     }
 
-    @GetMapping("/test")
+
+
+    /*@GetMapping("/test")
     public String test() {
         return "Spring Boot is running!";
     }
@@ -74,4 +76,5 @@ public class OcrController {
         System.out.println("Ping endpoint called");
         return "pong";
     }
+    */
 }
