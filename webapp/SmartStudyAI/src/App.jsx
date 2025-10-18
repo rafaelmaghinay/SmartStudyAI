@@ -5,6 +5,8 @@ import Home from "./pages/Home.jsx";
 import NotesHome from "./pages/NotesHome.jsx";
 import Notes from "./pages/Notes.jsx";
 import NotesEditor from "./pages/NotesEditor.jsx";
+import QuizHome from "./pages/QuizHome.jsx";
+import GenerateQuiz from "./pages/GenerateQuiz.jsx";
 import Quizzes from "./pages/Quizzes.jsx";
 import Stats from "./pages/Stats.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -83,6 +85,8 @@ function App() {
               }
             />
 
+            <Route path="/quizhome" element={<QuizHome />} />
+            <Route path="/generatequiz" element={<GenerateQuiz />} />
             <Route path="/quizzes" element={<Quizzes />} />
             <Route path="/stats" element={<Stats />} />
           </Routes>

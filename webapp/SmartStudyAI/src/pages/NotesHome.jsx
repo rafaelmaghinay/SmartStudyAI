@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { notesService } from "../services/notesService";
 import "./Notes.css";
 
 const colorPalette = [
@@ -16,25 +17,72 @@ const colorPalette = [
 function NotesHome({ subjects, setSubjects }) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [newSubject, setNewSubject] = useState({
-    subject: "",
-    colorIdx: 0,
-  });
+  const [newSubject, setNewSubject] = useState({ name: "", color_id: 0 });
+  const [loading, setLoading] = useState(false);
 
-  const handleSaveSubject = () => {
-    if (!newSubject.subject.trim()) return;
+  // 🔑 Fetch subjects of logged-in user
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const data = await notesService.getSubjects();
+        console.log("📥 Subjects from backend:", data);
 
-    const subject = {
-      id: Date.now(),
-      subject: newSubject.subject,
-      colorIdx: newSubject.colorIdx,
-      createdAt: new Date().toLocaleDateString(),
-      topics: [],
+        if (Array.isArray(data)) {
+          const mapped = data.map((subj) => ({
+            id: subj.id,
+            subject: subj.name,
+            colorIdx: parseInt(subj.colorId, 10),
+            createdAt: subj.createdAt
+              ? new Date(subj.createdAt).toLocaleDateString()
+              : new Date().toLocaleDateString(),
+            topics: subj.topics || [],
+          }));
+          setSubjects(mapped);
+        } else {
+          console.warn("⚠️ Unexpected response format:", data);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch subjects:", err);
+      }
     };
 
-    setSubjects((prev) => [...prev, subject]);
-    setNewSubject({ subject: "", colorIdx: 0 });
-    setShowModal(false);
+    fetchSubjects();
+  }, [setSubjects]);
+
+  const handleSaveSubject = async () => {
+    if (!newSubject.name.trim()) {
+      alert("⚠️ Subject name cannot be empty");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await notesService.createSubject(
+        newSubject.name,
+        newSubject.color_id
+      );
+
+      if (!data || !data.id) {
+        throw new Error("Invalid response from server");
+      }
+
+      const subject = {
+        id: data.id,
+        subject: data.name,
+        colorIdx: parseInt(data.colorId, 10),
+        createdAt: new Date().toLocaleDateString(),
+        topics: [],
+      };
+
+      setSubjects((prev) => [...prev, subject]);
+      setNewSubject({ name: "", color_id: 0 });
+      setShowModal(false);
+    } catch (err) {
+      console.error("❌ Error saving subject:", err);
+      alert("❌ Failed to save subject: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,17 +133,17 @@ function NotesHome({ subjects, setSubjects }) {
             <input
               type="text"
               placeholder="Subject name"
-              value={newSubject.subject}
+              value={newSubject.name}
               onChange={(e) =>
-                setNewSubject({ ...newSubject, subject: e.target.value })
+                setNewSubject({ ...newSubject, name: e.target.value })
               }
             />
             <select
-              value={newSubject.colorIdx}
+              value={newSubject.color_id}
               onChange={(e) =>
                 setNewSubject({
                   ...newSubject,
-                  colorIdx: parseInt(e.target.value),
+                  color_id: parseInt(e.target.value, 10),
                 })
               }
             >
@@ -106,7 +154,9 @@ function NotesHome({ subjects, setSubjects }) {
               ))}
             </select>
             <div className="modal-actions">
-              <button onClick={handleSaveSubject}>Save</button>
+              <button onClick={handleSaveSubject} disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </button>
               <button onClick={() => setShowModal(false)}>Cancel</button>
             </div>
           </div>
