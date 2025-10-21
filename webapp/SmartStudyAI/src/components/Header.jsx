@@ -1,11 +1,8 @@
-
-
 import React from "react";
 import { Gear, PersonCircle } from "react-bootstrap-icons";
 import Login from "./Login";
 import "./Header.css";
 import { useAuth } from "../services/AuthContext.jsx";
-
 
 const Header = () => {
   // Use authentication context
@@ -22,7 +19,11 @@ const Header = () => {
     <>
       <header className="header">
         <div className="header-left">
-          <span className="header-logo" />
+          <img
+            src="/src/components/SmartStudyLogo.png"
+            alt="SmartStudy AI Logo"
+            className="header-logo"
+          />
           <span className="header-title">SmartStudy AI</span>
         </div>
         <div className="header-right">
@@ -39,19 +40,25 @@ const Header = () => {
               </button>
             </>
           ) : (
-            <button className="header-btn" title="Login" onClick={() => setShowLoginModal(true)}>
-              <span style={{
-                display: 'inline-block',
-                borderRadius: '12px',
-                background: '#f0f0f0',
-                padding: '4px 16px',
-                fontWeight: 'bold',
-                fontSize: '16px',
-                border: '1px solid #ccc',
-                color: '#333',
-                minWidth: '60px',
-                textAlign: 'center'
-              }}>
+            <button
+              className="header-btn"
+              title="Login"
+              onClick={() => setShowLoginModal(true)}
+            >
+              <span
+                style={{
+                  display: "inline-block",
+                  borderRadius: "12px",
+                  background: "#f0f0f0",
+                  padding: "4px 16px",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  border: "1px solid #ccc",
+                  color: "#333",
+                  minWidth: "60px",
+                  textAlign: "center",
+                }}
+              >
                 Login
               </span>
             </button>
@@ -62,7 +69,10 @@ const Header = () => {
       {showLoginModal && !loggedIn && (
         <div className="Login-overlay">
           <Login onLoginSuccess={handleLoginSuccess} />
-          <button className="close-btn" onClick={() => setShowLoginModal(false)}>
+          <button
+            className="close-btn"
+            onClick={() => setShowLoginModal(false)}
+          >
             X
           </button>
         </div>

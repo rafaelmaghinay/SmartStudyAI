@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MdOutlineDriveFolderUpload } from "react-icons/md";
+import notesService from "../services/notesService";
 
-function NotesEditor({ onSave, onDelete }) {
+function NotesEditor() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,34 +19,76 @@ function NotesEditor({ onSave, onDelete }) {
   const [content, setContent] = useState(note?.content || "");
   const [files, setFiles] = useState([]);
 
-  const handleSave = () => {
-    if (!topic.trim()) return;
-
-    const topicData = {
-      id: note?.id || Date.now(),
-      topic,
-      content,
-      createdAt: note?.createdAt || new Date().toLocaleDateString(),
-      attachments: files, // ✅ include uploaded files
-    };
-
-    // ✅ Pass subject + topic
-    onSave(subject.subject, topicData);
-    navigate("/notes", { state: { subject } });
-  };
-
-  const handleDelete = () => {
-    if (note?.id) {
-      // ✅ Pass subject + topic id
-      onDelete(subject.subject, note.id);
+  const handleSave = async () => {
+    if (!topic.trim()) {
+      alert("⚠️ Topic name cannot be empty.");
+      return;
     }
-    navigate("/notes", { state: { subject } });
+
+    try {
+      if (note?.id) {
+        // Update existing note
+        await notesService.updateNote(note.id, topic, content);
+      } else {
+        // Create a new note
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          alert("⚠️ User not logged in.");
+          return;
+        }
+        await notesService.createNote(userId, subject.id, topic, content);
+      }
+
+      navigate("/notes", { state: { subject } });
+    } catch (err) {
+      console.error("❌ Error saving note:", err);
+      alert("❌ Failed to save note.");
+    }
   };
 
-  // ✅ Handle file uploads
-  const handleUpload = (event) => {
-    const newFiles = Array.from(event.target.files);
-    setFiles((prev) => [...prev, ...newFiles]);
+  const handleDelete = async () => {
+    if (!note?.id) {
+      alert("⚠️ No note to delete.");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete this note?")) {
+      return;
+    }
+
+    try {
+      await notesService.deleteNote(note.id);
+      navigate("/notes", { state: { subject } });
+    } catch (err) {
+      console.error("❌ Error deleting note:", err);
+      alert("❌ Failed to delete note.");
+    }
+  };
+
+  const handleUpload = async (event) => {
+    const selectedFiles = Array.from(event.target.files);
+    setFiles((prev) => [...prev, ...selectedFiles]);
+
+    if (selectedFiles.length > 0) {
+      try {
+        // Upload and extract text for the first file
+        const result = await notesService.uploadAndExtractText(
+          selectedFiles[0],
+          subject.id
+        );
+
+        if (result?.content) {
+          setContent(result.content);
+          setTopic(result.title || selectedFiles[0].name);
+          alert("✅ Text successfully extracted and added to notes!");
+        } else {
+          alert("⚠️ No text found in the file.");
+        }
+      } catch (err) {
+        console.error("❌ Error extracting text:", err);
+        alert("❌ Failed to extract text from file.");
+      }
+    }
   };
 
   const removeFile = (fileName) => {

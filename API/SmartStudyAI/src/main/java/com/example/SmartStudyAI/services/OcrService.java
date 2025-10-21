@@ -34,6 +34,7 @@ public class OcrService {
     private final HttpClient http = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
+
     @Value("${ocr.api.key}")
     private String OCR_KEY;
 
@@ -139,11 +140,27 @@ public class OcrService {
         return subjectRepository.save(subject);
     }
 
+    public Notes createNote(Long userId, Long subjectId, String title, String content) {
+        Notes note = new Notes();
+        note.setUserId(userId);
+        note.setSubject(subjectId);
+        note.setTitle(title);
+        note.setContent(content);
+        return ocrTextFileRepo.save(note);
+    }
+
     public List<Subject> getAllSubjectsByUserId(long userId) {
         return subjectRepository.findAllByUserId(userId);
     }
 
     public List<Notes> getAllNotesBySubjectId(Long userId, Long subjectId) {
         return ocrTextFileRepo.findAllByUserIdAndSubjectId(userId, subjectId);
+    }
+
+    public void deleteNoteById(Long id) {
+        if (!ocrTextFileRepo.existsById(id)) {
+            throw new RuntimeException("Note not found with ID: " + id);
+        }
+        ocrTextFileRepo.deleteById(id);
     }
 }
