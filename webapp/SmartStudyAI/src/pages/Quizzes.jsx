@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { quizService } from "../services/quizService";
 import QuizAttempt from "../components/QuizAttempt";
+import QuizGenerationModal from "../components/QuizGenerationModal";
 import "./Quizzes.css";
 
 function Quizzes() {
@@ -9,6 +10,7 @@ function Quizzes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [generatingQuiz, setGeneratingQuiz] = useState(false);
+  const [showGenerationModal, setShowGenerationModal] = useState(false);
 
   useEffect(() => {
     loadQuizzes();
@@ -66,12 +68,21 @@ function Quizzes() {
       <div className="quiz-header">
         <h2>My Quizzes</h2>
         <button 
-          onClick={() => handleGenerateQuiz(1, 1)} 
+          onClick={() => setShowGenerationModal(true)} 
           disabled={generatingQuiz}
         >
           {generatingQuiz ? "Generating..." : "Generate New Quiz"}
         </button>
       </div>
+      {showGenerationModal && (
+        <QuizGenerationModal
+          onClose={() => setShowGenerationModal(false)}
+          onGenerate={async (subjectId, noteId) => {
+            await handleGenerateQuiz(subjectId, noteId);
+            setShowGenerationModal(false);
+          }}
+        />
+      )}
       
       <div className="quiz-list">
         {quizzes.length === 0 ? (
