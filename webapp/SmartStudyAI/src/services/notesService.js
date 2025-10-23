@@ -18,6 +18,14 @@ export const notesService = {
   });
 },
 
+  updateNote: async (noteId, title, content) => {
+    const response = await apiRequest(`/ocr/notes/${noteId}`, {
+      method: "PUT",
+      body: JSON.stringify({ title, content }),
+    });
+    return response.note;
+  },
+  
   getSubjects: async () => {
     return apiRequest("/ocr/user/me/subjects",
        { method: "GET" });

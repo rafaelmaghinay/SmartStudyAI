@@ -149,6 +149,15 @@ public class OcrService {
         return ocrTextFileRepo.save(note);
     }
 
+    public Notes updateNote(Long noteId, String title, String content) {
+        Notes note = ocrTextFileRepo.findById(noteId)
+                .orElseThrow(() -> new RuntimeException("Note not found with ID: " + noteId));
+
+        note.setTitle(title);
+        note.setContent(content);
+        return ocrTextFileRepo.save(note);
+    }
+
     public List<Subject> getAllSubjectsByUserId(long userId) {
         return subjectRepository.findAllByUserId(userId);
     }
