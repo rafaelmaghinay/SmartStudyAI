@@ -1,79 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { quizService } from "../services/quizService";
+import QuizAttempt from "../components/QuizAttempt";
+import QuizGenerationModal from "../components/QuizGenerationModal";
 import "./Quizzes.css";
 
-// Dummy questions for demonstration
-const dummyQuestions = Array.from({ length: 15 }, (_, i) => ({
-  id: i + 1,
-  question: `Sample Question ${i + 1}?`,
-  options: {
-    a: "Option A",
-    b: "Option B",
-    c: "Option C",
-    d: "Option D",
-  },
-  answer: "a", // correct answer (for future API use)
-}));
-
 function Quizzes() {
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState({});
-  const questions = dummyQuestions; // Replace with API data in future
+  const [quizzes, setQuizzes] = useState([]);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [generatingQuiz, setGeneratingQuiz] = useState(false);
+  const [showGenerationModal, setShowGenerationModal] = useState(false);
 
-  const handleOption = (qid, opt) => {
-    setSelected({ ...selected, [qid]: opt });
+  useEffect(() => {
+    loadQuizzes();
+  }, []);
+
+  const loadQuizzes = async () => {
+    try {
+      const data = await quizService.getUserQuizzes();
+      setQuizzes(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading quizzes:", error);
+      setError("Failed to load quizzes. Please try again later.");
+      setLoading(false);
+    }
   };
 
-  const handleNext = () => {
-    if (current < questions.length - 1) setCurrent(current + 1);
+  const handleGenerateQuiz = async (subjectId, notesId) => {
+    try {
+      setGeneratingQuiz(true);
+      const data = await quizService.generate(subjectId, notesId);
+      setQuizzes([...quizzes, data]);
+      setSelectedQuiz(data.id);
+    } catch (error) {
+      console.error("Error generating quiz:", error);
+      setError("Failed to generate quiz. Please try again later.");
+    } finally {
+      setGeneratingQuiz(false);
+    }
   };
 
-  const handlePrev = () => {
-    if (current > 0) setCurrent(current - 1);
+  const handleQuizComplete = () => {
+    setSelectedQuiz(null);
+    loadQuizzes(); // Refresh the quiz list to show updated scores
   };
+
+  if (loading) {
+    return <div className="quiz-main">Loading quizzes...</div>;
+  }
+
+  if (error) {
+    return <div className="quiz-main error">{error}</div>;
+  }
+
+  if (selectedQuiz) {
+    return (
+      <div className="quiz-main">
+        <QuizAttempt quizId={selectedQuiz} onComplete={handleQuizComplete} />
+      </div>
+    );
+  }
 
   return (
     <div className="quiz-main">
-      <div className="quiz-card">
-        <div className="quiz-question">
-          <span>
-            Q{questions[current].id}. {questions[current].question}
-          </span>
-        </div>
-        <div className="quiz-options">
-          {Object.entries(questions[current].options).map(([key, val]) => (
-            <button
-              key={key}
-              className={`quiz-option${
-                selected[questions[current].id] === key ? " selected" : ""
-              }`}
-              onClick={() => handleOption(questions[current].id, key)}
-            >
-              <strong>{key.toUpperCase()}.</strong> {val}
-            </button>
-          ))}
-        </div>
-        <div className="quiz-nav">
-          <button onClick={handlePrev} disabled={current === 0}>
-            Previous
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={current === questions.length - 1}
-          >
-            Next
-          </button>
-        </div>
-        <div className="quiz-progress">
-          Question {current + 1} of {questions.length}
-          <div className="quiz-progress-bar">
-            <div
-              className="quiz-progress-fill"
-              style={{
-                width: `${((current + 1) / questions.length) * 100}%`,
-              }}
-            />
+      <div className="quiz-header">
+        <h2>My Quizzes</h2>
+        <button 
+          onClick={() => setShowGenerationModal(true)} 
+          disabled={generatingQuiz}
+        >
+          {generatingQuiz ? "Generating..." : "Generate New Quiz"}
+        </button>
+      </div>
+      {showGenerationModal && (
+        <QuizGenerationModal
+          onClose={() => setShowGenerationModal(false)}
+          onGenerate={async (subjectId, noteId) => {
+            await handleGenerateQuiz(subjectId, noteId);
+            setShowGenerationModal(false);
+          }}
+        />
+      )}
+      
+      <div className="quiz-list">
+        {quizzes.length === 0 ? (
+          <div className="no-quizzes">
+            No quizzes available. Generate your first quiz!
           </div>
-        </div>
+        ) : (
+          quizzes.map((quiz) => (
+            <div key={quiz.id} className="quiz-item">
+              <div className="quiz-item-info">
+                <h3>{quiz.subject}</h3>
+                <p>Created: {new Date(quiz.createdAt).toLocaleDateString()}</p>
+                {quiz.score !== undefined && (
+                  <p>Score: {quiz.score}%</p>
+                )}
+              </div>
+              <button
+                onClick={() => setSelectedQuiz(quiz.id)}
+                disabled={quiz.completed}
+              >
+                {quiz.completed ? "Completed" : "Start Quiz"}
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

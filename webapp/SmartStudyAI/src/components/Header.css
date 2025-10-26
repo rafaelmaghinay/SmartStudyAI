@@ -17,11 +17,10 @@
   /* No margin-left needed, stays at leftmost */
 }
 .header-logo {
-  width: 28px;
-  height: 28px;
-  background: #4f8cff;
+  width: vw;
+  height: 3.5vw;
   border-radius: 6px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
   display: inline-block;
 }
 .header-title {
