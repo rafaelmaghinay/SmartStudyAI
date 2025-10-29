@@ -13,10 +13,19 @@ public class Answers {
     private long id;
     private long questionId;
     private long quizId;
+    private long quizTakeId;
     private long userId;
     private String selectedOption;
     private boolean isCorrect;
     private Date answeredAt;
+
+    public long getQuizTakeId() {
+        return quizTakeId;
+    }
+
+    public void setQuizTakeId(long quizTakeId) {
+        this.quizTakeId = quizTakeId;
+    }
 
     public long getQuizId() {
         return quizId;
