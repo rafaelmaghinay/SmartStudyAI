@@ -1,13 +1,7 @@
 package com.example.SmartStudyAI.services;
 
-import com.example.SmartStudyAI.model.Answers;
-import com.example.SmartStudyAI.model.Notes;
-import com.example.SmartStudyAI.model.Questions;
-import com.example.SmartStudyAI.model.Quizzes;
-import com.example.SmartStudyAI.repositories.AnswerRepository;
-import com.example.SmartStudyAI.repositories.OcrTextFileRepo;
-import com.example.SmartStudyAI.repositories.QuestionRepository;
-import com.example.SmartStudyAI.repositories.QuizRepository;
+import com.example.SmartStudyAI.model.*;
+import com.example.SmartStudyAI.repositories.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +29,8 @@ public class QuizService {
     private QuestionRepository questionsRepository;
     @Autowired
     private AnswerRepository answersRepository;
+    @Autowired
+    private QuizTakeRepository quizTakeRepository;
 
     public Quizzes saveQuizFromJson(String json, Long userId, Long notesId) {
         try {
@@ -116,6 +112,12 @@ public class QuizService {
 
     public int calculateScore(Long userId, Long quizId, List<Character> answers) {
         List<Questions> questions = questionsRepository.findAllByQuizId(quizId);
+        QuizTakes quizTake = new QuizTakes();
+        quizTake.setQuizId(quizId);
+        quizTake.setUserId(userId);
+        quizTake = quizTakeRepository.save(quizTake);
+        Long quizTakeId = quizTake.getId();
+
         int score = 0;
 
         for (int i = 0; i < questions.size(); i++) {
@@ -127,6 +129,7 @@ public class QuizService {
             Answers answer = new Answers();
             answer.setUserId(userId);
             answer.setQuizId(quizId);
+            answer.setQuizTakeId(quizTakeId);
             answer.setQuestionId(question.getId());
             answer.setSelectedOption(String.valueOf(userAnswer));
             answersRepository.save(answer);
@@ -135,6 +138,10 @@ public class QuizService {
                 score++;
             }
         }
+
+        quizTake.setScore(score);
+        quizTakeRepository.save(quizTake);
         return score;
     }
+
 }
