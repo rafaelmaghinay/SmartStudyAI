@@ -6,6 +6,7 @@ import com.example.SmartStudyAI.repositories.OcrTextFileRepo;
 import com.example.SmartStudyAI.repositories.SubjectRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -162,6 +163,7 @@ public class OcrService {
         return subjectRepository.findAllByUserId(userId);
     }
 
+    @Transactional
     public List<Notes> getAllNotesBySubjectId(Long userId, Long subjectId) {
         return ocrTextFileRepo.findAllByUserIdAndSubjectId(userId, subjectId);
     }
@@ -171,5 +173,12 @@ public class OcrService {
             throw new RuntimeException("Note not found with ID: " + id);
         }
         ocrTextFileRepo.deleteById(id);
+    }
+
+    public void deleteSubjectById(Long id) {
+        if (!subjectRepository.existsById(id)) {
+            throw new RuntimeException("Subject not found with ID: " + id);
+        }
+        subjectRepository.deleteById(id);
     }
 }

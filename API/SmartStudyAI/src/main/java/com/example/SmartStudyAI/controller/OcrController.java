@@ -118,6 +118,17 @@ public class OcrController {
         }
     }
 
+    @DeleteMapping("/subjects/{id}")
+    public ResponseEntity<?> deleteSubjectById(@PathVariable Long id) {
+        try {
+            ocrService.deleteSubjectById(id);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Subject deleted successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("success", false, "error", e.getMessage()));
+        }
+    }
+
 
 
     /*@GetMapping("/test")
